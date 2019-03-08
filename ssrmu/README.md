@@ -1,106 +1,81 @@
-shadowsocks
-===========
+yum -y install epel-release
 
-[![PyPI version]][PyPI]
-[![Build Status]][Travis CI]
-[![Coverage Status]][Coverage]
+yum -y update
 
-A fast tunnel proxy that helps you bypass firewalls.
+yum install python-setuptools python-pip supervisor python-meld3 wget -y
 
-Server
-------
-
-### Install
-
-Debian / Ubuntu:
-
-    apt-get install python-pip
-    pip install shadowsocks
-
-CentOS:
-
-    yum install python-setuptools && easy_install pip
-    pip install shadowsocks
-
-Windows:
-
-See [Install Server on Windows]
-
-### Usage
-
-    ssserver -p 443 -k password -m aes-256-cfb
-
-To run in the background:
-
-    sudo ssserver -p 443 -k password -m aes-256-cfb --user nobody -d start
-
-To stop:
-
-    sudo ssserver -d stop
-
-To check the log:
-
-    sudo less /var/log/shadowsocks.log
-
-Check all the options via `-h`. You can also use a [Configuration] file
-instead.
-
-Client
-------
-
-* [Windows] / [OS X]
-* [Android] / [iOS]
-* [OpenWRT]
-
-Use GUI clients on your local PC/phones. Check the README of your client
-for more information.
-
-Documentation
--------------
-
-You can find all the documentation in the [Wiki].
-
-License
--------
-
-Copyright 2015 clowwindy
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may
-not use this file except in compliance with the License. You may obtain
-a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-License for the specific language governing permissions and limitations
-under the License.
-
-Bugs and Issues
-----------------
-
-* [Troubleshooting]
-* [Issue Tracker]
-* [Mailing list]
+### easy_install pip
 
 
+yum install git
 
-[Android]:           https://github.com/shadowsocks/shadowsocks-android
-[Build Status]:      https://travis-ci.org/falseen/shadowsocks.svg?branch=manyuser-travis
-[Configuration]:     https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File
-[Coverage Status]:   https://jenkins.shadowvpn.org/result/shadowsocks
-[Coverage]:          https://jenkins.shadowvpn.org/job/Shadowsocks/ws/PYENV/py34/label/linux/htmlcov/index.html
-[Debian sid]:        https://packages.debian.org/unstable/python/shadowsocks
-[iOS]:               https://github.com/shadowsocks/shadowsocks-iOS/wiki/Help
-[Issue Tracker]:     https://github.com/shadowsocks/shadowsocks/issues?state=open
-[Install Server on Windows]: https://github.com/shadowsocks/shadowsocks/wiki/Install-Shadowsocks-Server-on-Windows
-[Mailing list]:      https://groups.google.com/group/shadowsocks
-[OpenWRT]:           https://github.com/shadowsocks/openwrt-shadowsocks
-[OS X]:              https://github.com/shadowsocks/shadowsocks-iOS/wiki/Shadowsocks-for-OSX-Help
-[PyPI]:              https://pypi.python.org/pypi/shadowsocks
-[PyPI version]:      https://img.shields.io/pypi/v/shadowsocks.svg?style=flat
-[Travis CI]:         https://travis-ci.org/falseen/shadowsocks
-[Troubleshooting]:   https://github.com/shadowsocks/shadowsocks/wiki/Troubleshooting
-[Wiki]:              https://github.com/shadowsocks/shadowsocks/wiki
-[Windows]:           https://github.com/shadowsocks/shadowsocks-csharp
+yum -y groupinstall "Development Tools"
+
+wget https://github.com/jedisct1/libsodium/releases/download/1.0.16/libsodium-1.0.16.tar.gz
+tar xf libsodium-1.0.16.tar.gz && cd libsodium-1.0.16
+./configure && make -j2 && make install
+echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
+ldconfig
+cd ../ && rm -rf libsodium*
+
+docker version > /dev/null || curl -fsSL get.docker.com | bash
+chkconfig docker on
+service docker start
+service docker stop
+service docker restart
+
+docker run -d --name=ssr -e NODE_ID=40 -e API_INTERFACE=modwebapi -e WEBAPI_URL=https://xxx -e WEBAPI_TOKEN=xxx -e MU_SUFFIX=jd.hk --network=host --log-opt max-size=50m --log-opt max-file=3 --restart=always alliswell2day/v3ssr:ssr
+
+
+cat >> /etc/security/limits.conf << EOF
+* soft nofile 51200
+* hard nofile 51200
+EOF
+
+ulimit -n 51200
+
+
+cat >> /etc/sysctl.conf << EOF
+fs.file-max = 51200
+net.core.rmem_max = 67108864
+net.core.wmem_max = 67108864
+net.core.netdev_max_backlog = 250000
+net.core.somaxconn = 4096
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.tcp_tw_recycle = 0
+net.ipv4.tcp_fin_timeout = 30
+net.ipv4.tcp_keepalive_time = 1200
+net.ipv4.ip_local_port_range = 10000 65000
+net.ipv4.tcp_max_syn_backlog = 8192
+net.ipv4.tcp_max_tw_buckets = 5000
+net.ipv4.tcp_fastopen = 3
+net.ipv4.tcp_rmem = 4096 87380 67108864
+net.ipv4.tcp_wmem = 4096 65536 67108864
+net.ipv4.tcp_mtu_probing = 1
+EOF
+
+sysctl -p
+
+pip install supervisor==3.1
+
+chkconfig supervisord on
+
+wget https://raw.githubusercontent.com/alliswell2day/panel-download/master/supervisord.conf -O /etc/supervisord.conf
+wget https://raw.githubusercontent.com/alliswell2day/panel-download/master/supervisord -O /etc/init.d/supervisord
+
+chmod -R 777 /etc/init.d/supervisord
+service supervisord start
+
+
+systemctl stop firewalld
+systemctl mask firewalld
+
+
+yum install iptables-services -y
+systemctl status iptables
+systemctl enable iptables
+systemctl start iptables
+systemctl status iptables
+systemctl stop iptables
+systemctl restart iptables
