@@ -1,5 +1,5 @@
 FROM alpine:3.9
-MAINTAINER FAN VINGA<fanalcest@gmail.com>
+MAINTAINER SAM<allsafe@my.com>
 
 ENV NODE_ID=0                     \
     DNS_1=1.0.0.1                 \
@@ -8,7 +8,7 @@ ENV NODE_ID=0                     \
     CLOUDSAFE=0                   \
     AUTOEXEC=0                    \
     ANTISSATTACK=0                \
-    MU_SUFFIX=zhaoj.in            \
+    MU_SUFFIX=jd.hk            \
     MU_REGEX=%5m%id.%suffix       \
     API_INTERFACE=modwebapi       \
     WEBAPI_URL=https://zhaoj.in   \
@@ -56,7 +56,7 @@ CMD cp apiconfig.py userapiconfig.py &&                                        c
     sed -i "s|CLOUDSAFE = 1|CLOUDSAFE = ${CLOUDSAFE}|"                         /root/shadowsocks/userapiconfig.py && \
     sed -i "s|AUTOEXEC = 0|AUTOEXEC = ${AUTOEXEC}|"                            /root/shadowsocks/userapiconfig.py && \
     sed -i "s|ANTISSATTACK = 0|ANTISSATTACK = ${ANTISSATTACK}|"                /root/shadowsocks/userapiconfig.py && \
-    sed -i "s|MU_SUFFIX = 'zhaoj.in'|MU_SUFFIX = '${MU_SUFFIX}'|"              /root/shadowsocks/userapiconfig.py && \
+    sed -i "s|MU_SUFFIX = 'jd.hk'|MU_SUFFIX = '${MU_SUFFIX}'|"              /root/shadowsocks/userapiconfig.py && \
     sed -i "s|MU_REGEX = '%5m%id.%suffix'|MU_REGEX = '${MU_REGEX}'|"           /root/shadowsocks/userapiconfig.py && \
     sed -i "s|API_INTERFACE = 'modwebapi'|API_INTERFACE = '${API_INTERFACE}'|" /root/shadowsocks/userapiconfig.py && \
     sed -i "s|WEBAPI_URL = 'https://zhaoj.in'|WEBAPI_URL = '${WEBAPI_URL}'|"   /root/shadowsocks/userapiconfig.py && \
