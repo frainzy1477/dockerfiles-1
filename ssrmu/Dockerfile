@@ -43,10 +43,15 @@ RUN  apk --no-cache add \
                         automake \
                         build-base \
                         linux-headers         && \
+                        
+     git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks" --depth 1 && cd /root/shadowsocks && \
+     pip install --no-cache-dir -r requirements.txt && \
+     cp apiconfig.py userapiconfig.py && \
+     cp config.json user-config.json && \
+     apk del .build-deps && rm -rf /var/cache/apk/*  && \                  
      ln -s /usr/bin/python3 /usr/bin/python   && \
      ln -s /usr/bin/pip3    /usr/bin/pip      && \
      pip install --upgrade pip                && \
-     pip install -r requirements.txt          && \
      rm -rf ~/.cache && touch /etc/hosts.deny && \
      apk del --purge .build-deps
 
